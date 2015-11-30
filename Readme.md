@@ -12,7 +12,7 @@ A small Rails engine that procudes a centralized dashboard of all monit instance
 ### Add to Gemfile
 
 ```
-gem monit_monitor
+gem 'monit_monitor'
 ```
 
 ### Instal gems
