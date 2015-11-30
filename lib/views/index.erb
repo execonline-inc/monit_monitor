@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Monittr</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+      body     { color: #222; font-family: sans-serif; margin: 2em; }
+      p        { margin: 0 0 0.5em 0; }
+      #example { border: 4px solid #ccc; padding: 1em; margin: 1em 0 1em 0; }
+    </style>
+
+    <style>#monittr
+      { color: #222; font-family: sans-serif; }
+
+      #monittr .clear
+      { clear:both; display:block; overflow:hidden; visibility:hidden; width:0; height:0 }
+
+      #monittr .rounded
+      { -moz-border-radius: 0.5em;
+      border-radius: 0.5em }
+
+      #monittr a
+      { color: #222;
+      text-decoration: none; }
+
+      #monittr a:hover
+      { text-decoration: underline; }
+
+      #monittr p
+      { margin: 0; padding: 0; }
+
+      #monittr #toggle
+      { font-size: 80%;
+        text-decoration: underline;
+      text-align: right; }
+
+      #monittr .dot
+      { text-indent: -9000px;
+        background-color: #ccc;
+        width: 6px; height: 6px;
+        margin: 0.25em 0.25em 0 0;
+        display: block;
+        float: left;
+        -moz-border-radius: 6px;
+      border-radius: 6px; }
+      #monittr .dot.running
+      { background-color: green; }
+      #monittr .dot.failure
+      { background-color: red; }
+      #monittr .dot.warning
+      { background-color: orange; }
+
+      #monittr .server
+      { color: #222;
+        background-color: #F8F8F8;
+        margin: 0.2em 0 0 0;
+        border: 1px solid #ccc;
+      border-top: none; }
+
+      #monittr .server h2
+      { font-size: 14px;
+        font-weight: normal;
+        background-color: #ccc;
+        padding: 0.6em 0.5em 0.4em 1em;
+      margin: 0; }
+      #monittr .server.running h2
+      { background-color: #66E98A; }
+      #monittr .server.failure h2
+      { color: #fff;
+      background-color: #CC033E; }
+      #monittr .server.failure h2 *
+      { color: #fff !important; }
+      #monittr .server h2 a
+      { margin-left: 0.25em; }
+
+      #monittr .server.expanded h2
+      { -moz-border-radius-bottomleft: 0;
+        -moz-border-radius-bottomright: 0;
+        border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0; }
+
+      #monittr .server h2 small
+      { font-size: 75%;
+      float: right; }
+
+      #monittr .server .info
+      { margin-right: 1em; }
+
+      #monittr .server small .info .label
+      { font-size: 90%;
+      text-transform: uppercase; }
+      #monittr .server small .info .label
+      { opacity: 0.6; }
+
+      #monittr .server .content
+      { padding: 0.5em 0 0.5em 0; }
+
+      #monittr .server .segment
+      { margin-bottom: 1em;
+        padding: 0.25em 0.5em 0.25em 0.5em;
+        float: none;
+        clear: both;
+      border-bottom: 1px solid #E5E5E5; }
+
+      #monittr .server .segment h3
+      { color: #999;
+        font-size: 80%;
+        font-weight: normal;
+        text-transform: uppercase;
+        margin: 0;
+        padding: 0;
+        float: left;
+      width: 10em; }
+
+      #monittr .server .segment ul
+      { font-size: 90%;
+        float: left;
+        margin: -0.3em 0 0 0;
+      padding: 0; }
+
+      #monittr .server .segment ul li
+      { list-style-type: none;
+        padding: 0.25em;
+      border-bottom: 1px solid #ccc; }
+      #monittr .server .segment ul li:last-child
+      { border-bottom: none; }
+      #monittr .server .segment ul li strong
+      { width: 20em;
+        display: block;
+      float: left; }
+
+      #monittr .server .segment strong .label
+      { color: #fff;
+        background-color: #ccc;
+        font-size: 75%;
+        text-transform: uppercase;
+        font-weight: normal;
+        padding: 0.25em 0.5em 0.15em 0.5em;
+        -moz-border-radius:    0.5em;
+      border-radius:         0.5em; }
+
+      #monittr .server .segment strong .label.running
+      { background-color: green; }
+      #monittr .server .segment strong .label.warning
+      { background-color: orange; }
+      #monittr .server .segment strong .label.failure
+      { background-color: red; }
+    </style>
+  </head>
+  <body>
+
+    <% cluster = settings.cluster  %>
+    <div id="monittr">
+
+      <p id="toggle">+ Expand all</p>
+
+      <% cluster.servers.each do |server| %>
+
+        <div class="server rounded">
+          <h2 class="rounded">
+            <strong>
+              <span title="status" class="dot status <%= server.system.status == 0 ? 'running' : 'failure' %>">&middot;</span>
+              <span title="monitored" class="dot monitored <%= server.system.monitored == 1 ? 'running' : 'failure' %>">&middot;</span>
+              <a href="<%= server.url %>"><%= server.system.name %></a>
+              <%= "<em>#{server.system.message}</em>" if server.system.message %>
+            </strong>
+
+            <small>
+              <span class="info"><span class="label">load:   </span><%= server.system.load   || 'N/A' %></span>
+              <span class="info"><span class="label">cpu:    </span><%= server.system.cpu    || 'N/A' %></span>
+              <span class="info"><span class="label">memory: </span><%= server.system.memory || 'N/A' %></span>
+              <span class="info"><span class="label">swap:   </span><%= server.system.swap   || 'N/A' %></span>
+              <span class="info"><span class="label">uptime: </span><%# time_in_words(server.system.uptime) || 'N/A' %></span>
+            </small>
+          </h2>
+
+          <div class="content">
+            <div class="segment filesystems">
+              <h3>Filesystem</h3>
+              <ul class="clearfix">
+                <% server.filesystems.each do |fs| %>
+                  <li>
+                    <strong title="(<%= fs.usage %> of <%= fs.total %>)">
+                      <span class="dot status <%= fs.status == 0 ? 'running' : 'failure' %>">&middot;</span>
+                      <span class="dot monitored <%= fs.monitored == 1 ? 'running' : 'failure' %>">&middot;</span>
+                      <%= fs.name %>
+                    </strong>
+                    <%= fs.percent %>%
+                  </li>
+                <% end %>
+              </ul>
+              <div class="clear"></div>
+            </div><!-- /filesystems -->
+
+            <div class="segment processes">
+              <h3>Processes</h3>
+              <ul>
+                <% server.processes.each do |process| %>
+                  <li>
+                    <strong>
+                      <span class="dot status <%= process.status == 0 ? 'running' : 'failure' %>">&middot;</span>
+                      <span class="dot monitored <%= process.monitored == 1 ? 'running' : 'failure' %>">&middot;</span>
+                      <%= process.name %>
+                      <% unless process.monitored == 1 %><span class="label warning">NOT MONITORED</span><% end %>
+                    </strong>
+
+                    <small>
+                      <span class="info"><span class="label">cpu:    </span><%= process.cpu    || 'N/A' %></span>
+                      <span class="info"><span class="label">memory: </span><%= process.memory || 'N/A' %></span>
+                      <span class="info"><span class="label">uptime: </span><%= time_in_words(process.uptime) || 'N/A' %></span>
+                    </small>
+                  </li>
+                <% end %>
+              </ul>
+              <div class="clear"></div>
+            </div><!-- /processes -->
+
+            <div class="segment hosts">
+              <h3>Hosts</h3>
+              <ul>
+                <% server.hosts.each do |host| %>
+                  <li>
+                    <strong>
+                      <span class="dot status <%= host.status == 0 ? 'running' : 'failure' %>">&middot;</span>
+                      <span class="dot monitored <%= host.monitored == 1 ? 'running' : 'failure' %>">&middot;</span>
+                      <%= host.name %>
+                      <% unless host.monitored == 1 %><span class="label warning">NOT MONITORED</span><% end %>
+                    </strong>
+
+                    <small>
+                      <span class="info"><span class="label">response time: </span><%= host.response_time  || 'N/A' %></span>
+                    </small>
+                  </li>
+                <% end %>
+              </ul>
+              <div class="clear"></div>
+            </div><!-- /hosts -->
+
+          </div><!-- /content -->
+
+          <div class="clear"></div>
+        </div><!-- /server -->
+      <% end %>
+
+      <div class="clear"></div>
+    </div><!-- /monittr -->
+  </body>
+</html>
+
+<script type="text/javascript"   src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+
+<script>
+  $(function() {
+
+    $('#monittr .server').bind('expand', function() {
+      $(this).addClass('expanded').find('.content').show('fast', function() { });
+    });
+    $('#monittr .server').bind('collapse', function() {
+      $(this).removeClass('expanded').find('.content').hide('fast', function() { });
+    });
+
+    $('#monittr .server h2').click(
+      function(event) {
+        if ( event.target != this ) return true; // Enable clicking on links
+        $(this).parent().hasClass('expanded') ? $(this).parent().trigger('collapse') : $(this).parent().trigger('expand');
+      });
+
+      $('#toggle').toggle(
+        function() {
+          $('#monittr .server').trigger('expand');
+          $(this).html('- Collapse all');
+        },
+        function() {
+          $('#monittr .server').trigger('collapse');
+          $(this).html('+ Expand all');
+        }
+      );
+  });
+</script>
