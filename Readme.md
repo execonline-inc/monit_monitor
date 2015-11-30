@@ -1,5 +1,8 @@
-A small application based on monitrr to procude one centralized dashboard of all monit processes
+A small Rails engine that procudes a centralized dashboard of all monit instances. This gem is an extension of
+[monittr](https://github.com/karmi/monittr) to make it trivial to use in a Rails application
 
+# Example
+ 
 ![Alt text](https://monosnap.com/file/qRJ1RdJ7aw3RX2BTdJt7hl6ijA0Fh4.png)
 
 # Install
